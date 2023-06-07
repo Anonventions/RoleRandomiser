@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Role Randomizer</title>
+    <style>
+        body {
+            background-color: #333;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #login {
+            width: 300px;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #666;
+        }
+        #roles {
+            margin-top: 20px;
+            text-align: center;
+        }
+        p {
+            background-color: #444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .sheriff {
+            color: blue;
+        }
+        .murderer {
+            color: red;
+        }
+        .victim {
+            color: lightgray;
+        }
+        #logins {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-box {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .login-box input {
+            width: 150px;
+            margin-right: 10px;
+        }
+        .taken-roles {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="logins">
+        <div class="login-box">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="loginButton">Login</button>
+        </div>
+        <button id="adminButton">Admin Login</button>
+    </div>
+    <div id="takenRoles" class="taken-roles"></div>
+    <div id="admin"></div>
+
+    <script>
+        const roles = ["Sheriff", "Sheriff", "Murderer", "Murderer"];
+        let takenRoles = [];
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+
+        document.getElementById('loginButton').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password && !users[username]) {
+                let role;
+                if (roles.length > 0) {
+                    const roleIndex = Math.floor(Math.random() * roles.length);
+                    role = roles.splice(roleIndex, 1)[0];
+                } else {
+                    role = "Victim";
+                }
+                takenRoles.push({role, username});
+                users[username] = role;
+                localStorage.setItem('users', JSON.stringify(users));
+
+                document.getElementById('takenRoles').innerHTML = takenRoles.map(({role}) => `<p class="${role.toLowerCase()}">${role} role has been taken</p>`).join('');
+            }
+        });
+
+        document.getElementById('adminButton').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin123' && password === 'admin123') {
+                document.getElementById('admin').innerHTML = Object.entries(users).map(([username, role]) => `<p>${username}: ${role}</p>`).join('');
+            }
+        });
+    </script>
+</body>
+</html>
